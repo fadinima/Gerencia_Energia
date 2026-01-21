@@ -1,2 +1,54 @@
 libreoffice
-libreoffice-writer
+```
+
+**Nota:** Solo ponemos `libreoffice` (una línea), sin `libreoffice-writer`
+
+4. Commit changes
+
+---
+
+## 🔄 Reiniciar Aplicación
+
+Ahora vamos a hacer un reinicio limpio:
+
+1. Ve a **Streamlit Cloud**
+2. En tu app, haz clic en **"Manage app"** 
+3. Haz clic en **"Delete app"** (sí, vamos a borrarla)
+4. Confirma la eliminación
+
+**No te preocupes** - tus archivos siguen en GitHub, solo estamos borrando el despliegue.
+
+---
+
+## 🚀 Crear App Nueva (Despliegue Limpio)
+
+1. En Streamlit Cloud, haz clic en **"New app"**
+
+2. Configura:
+```
+Repository: tu-usuario/dashboard-energia
+Branch: main
+Main file path: dashboard_energia.py
+```
+
+3. Haz clic en **"Deploy!"**
+
+4. Espera 3-5 minutos
+
+Esta vez debería funcionar correctamente porque:
+- Versiones más simples sin conflictos
+- Sin caché de instalaciones anteriores
+- Solo los paquetes esenciales
+
+---
+
+## 📊 Verificación
+
+Cuando termine la instalación, deberías ver en los logs:
+```
+✅ Successfully installed streamlit
+✅ Successfully installed pandas
+✅ Successfully installed openpyxl
+✅ Successfully installed plotly
+✅ Installing libreoffice
+✅ Starting app...
