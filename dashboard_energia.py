@@ -7,7 +7,6 @@ import os
 import json
 from io import BytesIO
 import tempfile
-import subprocess
 
 # ================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -20,97 +19,379 @@ st.set_page_config(
 )
 
 # ================================
-# ESTILOS CSS PERSONALIZADOS
+# ESTILOS CSS MODERNOS Y ATRACTIVOS
 # ================================
 st.markdown("""
     <style>
-    /* Colores corporativos - PERSONALIZAR AQUÍ */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+    
+    /* Variables de color - Esquema energético vibrante */
     :root {
-        --primary-color: #1E40AF;
-        --secondary-color: #3B82F6;
-        --accent-color: #60A5FA;
-        --background-color: #F0F4F8;
+        --primary: #FF6B35;
+        --secondary: #F7931E;
+        --accent: #FDC830;
+        --dark: #1A1A2E;
+        --light: #EAEAEA;
+        --success: #4ECDC4;
+        --danger: #FF6B6B;
+        --info: #4D96FF;
     }
     
-    /* Header personalizado */
-    .main-header {
-        background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
-        padding: 2rem;
-        border-radius: 10px;
+    /* Fuente global */
+    * {
+        font-family: 'Poppins', sans-serif !important;
+    }
+    
+    /* Fondo con patrón */
+    .main {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background-attachment: fixed;
+        position: relative;
+    }
+    
+    .main::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.03) 35px, rgba(255,255,255,.03) 70px);
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Header espectacular con gradiente y efectos */
+    .hero-header {
+        background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FDC830 100%);
+        padding: 3rem 2rem;
+        border-radius: 20px;
         color: white;
         text-align: center;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 
+            0 20px 60px rgba(255, 107, 53, 0.3),
+            0 0 0 1px rgba(255,255,255,0.1) inset;
+        position: relative;
+        overflow: hidden;
+        animation: slideDown 0.6s ease-out;
     }
     
-    .main-header h1 {
+    .hero-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .hero-header h1 {
         margin: 0;
-        font-size: 2.5rem;
-        font-weight: 700;
+        font-size: 3.5rem !important;
+        font-weight: 800 !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        position: relative;
+        z-index: 1;
+        letter-spacing: -1px;
     }
     
-    .main-header p {
-        margin: 0.5rem 0 0 0;
-        font-size: 1.1rem;
-        opacity: 0.9;
+    .hero-header p {
+        margin: 1rem 0 0 0;
+        font-size: 1.3rem;
+        opacity: 0.95;
+        font-weight: 300;
+        position: relative;
+        z-index: 1;
     }
     
-    /* Métricas personalizadas */
+    /* Tarjetas de métricas modernas */
     .metric-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        border-left: 4px solid #3B82F6;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 
+            0 8px 32px rgba(0, 0, 0, 0.1),
+            0 0 0 1px rgba(255,255,255,0.5) inset;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out backwards;
     }
     
-    /* Sidebar */
-    .css-1d391kg {
-        background-color: #F8FAFC;
+    .metric-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.15),
+            0 0 0 1px rgba(255,255,255,0.8) inset;
     }
     
-    /* Botones */
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #FF6B35, #F7931E, #FDC830);
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Animaciones escalonadas */
+    .metric-card:nth-child(1) { animation-delay: 0.1s; }
+    .metric-card:nth-child(2) { animation-delay: 0.2s; }
+    .metric-card:nth-child(3) { animation-delay: 0.3s; }
+    .metric-card:nth-child(4) { animation-delay: 0.4s; }
+    
+    /* Valores de métricas con estilo */
+    div[data-testid="stMetricValue"] {
+        font-size: 2.8rem !important;
+        font-weight: 700 !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    div[data-testid="stMetricLabel"] {
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: #555 !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    div[data-testid="stMetricDelta"] {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Sidebar elegante */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1A1A2E 0%, #16213E 100%);
+        border-right: 2px solid rgba(255, 107, 53, 0.3);
+    }
+    
+    section[data-testid="stSidebar"] * {
+        color: white !important;
+    }
+    
+    section[data-testid="stSidebar"] .stMarkdown {
+        color: rgba(255, 255, 255, 0.9) !important;
+    }
+    
+    /* Botones modernos */
     .stButton>button {
-        background-color: #3B82F6;
-        color: white;
-        border-radius: 5px;
-        padding: 0.5rem 2rem;
+        background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+        color: white !important;
         border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
         font-weight: 600;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     
     .stButton>button:hover {
-        background-color: #1E40AF;
+        background: linear-gradient(135deg, #F7931E 0%, #FF6B35 100%);
+        box-shadow: 0 6px 25px rgba(255, 107, 53, 0.5);
+        transform: translateY(-2px);
     }
     
-    /* Tablas */
+    /* Tabs elegantes */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.5rem;
+        border-radius: 12px;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #FF6B35, #F7931E) !important;
+        color: white !important;
+    }
+    
+    /* Inputs y selectboxes */
+    .stSelectbox, .stTextInput, .stNumberInput {
+        color: white;
+    }
+    
+    input, select {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        color: white !important;
+        padding: 0.75rem !important;
+    }
+    
+    /* File uploader elegante */
+    .stFileUploader {
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px dashed rgba(255, 107, 53, 0.5);
+        border-radius: 12px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .stFileUploader:hover {
+        border-color: #FF6B35;
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Dataframes con estilo */
     .dataframe {
-        font-size: 0.9rem;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
     }
     
-    /* Alertas de estado */
-    .alert-success {
-        background-color: #D1FAE5;
-        color: #065F46;
-        padding: 1rem;
-        border-radius: 5px;
-        border-left: 4px solid #10B981;
+    /* Alertas personalizadas */
+    .stAlert {
+        border-radius: 12px;
+        border-left: 4px solid;
+        animation: slideIn 0.5s ease-out;
     }
     
-    .alert-warning {
-        background-color: #FEF3C7;
-        color: #92400E;
-        padding: 1rem;
-        border-radius: 5px;
-        border-left: 4px solid #F59E0B;
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
     
-    .alert-danger {
-        background-color: #FEE2E2;
-        color: #991B1B;
-        padding: 1rem;
-        border-radius: 5px;
-        border-left: 4px solid #EF4444;
+    /* Success messages */
+    .element-container:has(.stSuccess) {
+        animation: bounceIn 0.6s ease-out;
+    }
+    
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    /* Spinner personalizado */
+    .stSpinner > div {
+        border-color: #FF6B35 transparent transparent transparent !important;
+    }
+    
+    /* Footer moderno */
+    .footer {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-top: 3rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Efectos de brillo en hover para gráficos */
+    .js-plotly-plot:hover {
+        filter: brightness(1.05);
+        transition: filter 0.3s ease;
+    }
+    
+    /* Scrollbar personalizado */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #FF6B35, #F7931E);
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #F7931E, #FDC830);
+    }
+    
+    /* Badges */
+    .badge {
+        display: inline-block;
+        padding: 0.35em 0.65em;
+        font-size: 0.875em;
+        font-weight: 600;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -119,51 +400,17 @@ st.markdown("""
 # FUNCIONES AUXILIARES
 # ================================
 
-def convertir_xlsb_a_xlsx(xlsb_file):
-    """Convierte archivo XLSB a XLSX usando LibreOffice"""
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsb') as tmp_xlsb:
-        tmp_xlsb.write(xlsb_file.read())
-        xlsb_path = tmp_xlsb.name
-    
-    output_dir = tempfile.gettempdir()
-    
-    try:
-        result = subprocess.run([
-            'libreoffice', '--headless', '--convert-to', 'xlsx',
-            '--outdir', output_dir, xlsb_path
-        ], capture_output=True, text=True, timeout=60)
-        
-        xlsx_path = xlsb_path.replace('.xlsb', '.xlsx')
-        
-        if os.path.exists(xlsx_path):
-            return xlsx_path
-        else:
-            st.error("Error al convertir el archivo XLSB")
-            return None
-    except Exception as e:
-        st.error(f"Error en la conversión: {e}")
-        return None
-    finally:
-        if os.path.exists(xlsb_path):
-            os.remove(xlsb_path)
-
-
 def cargar_datos_gerencia_energia(file_path, gerencia_filter="ENERGIA"):
     """Carga y filtra datos de la gerencia especificada"""
     try:
-        # Leer la hoja 'informe' que tiene todos los datos
         df = pd.read_excel(file_path, sheet_name='informe')
-        
-        # Limpiar nombres de columnas
         df.columns = df.columns.str.strip()
         
-        # Filtrar por gerencia (si existe la columna)
         if 'Gerencia' in df.columns:
             df_filtered = df[df['Gerencia'].str.contains(gerencia_filter, case=False, na=False)]
         elif 'Denominación' in df.columns:
             df_filtered = df[df['Denominación'].str.contains(gerencia_filter, case=False, na=False)]
         else:
-            # Si no hay columna de gerencia, tomar todos los datos
             df_filtered = df
         
         return df_filtered
@@ -180,11 +427,9 @@ def guardar_historico(df, mes, año, usuario="Sistema"):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{historico_dir}/informe_{mes}_{año}_{timestamp}.xlsx"
     
-    # Guardar Excel con metadata
     with pd.ExcelWriter(filename, engine='openpyxl') as writer:
         df.to_excel(writer, sheet_name='Datos', index=False)
         
-        # Crear hoja de metadata
         metadata = pd.DataFrame({
             'Mes': [mes],
             'Año': [año],
@@ -194,7 +439,6 @@ def guardar_historico(df, mes, año, usuario="Sistema"):
         })
         metadata.to_excel(writer, sheet_name='Metadata', index=False)
     
-    # Guardar registro JSON
     registro_json = f"{historico_dir}/registro.json"
     registro = []
     
@@ -226,108 +470,194 @@ def cargar_historico():
     return []
 
 
-def crear_graficos_analisis(df):
-    """Crea gráficos de análisis para el dashboard"""
+def crear_graficos_modernos(df):
+    """Crea gráficos modernos y atractivos con Plotly"""
     graficos = {}
     
-    # 1. Valor total por estado
+    # Paleta de colores vibrante
+    color_scale = ['#FF6B35', '#F7931E', '#FDC830', '#4ECDC4', '#4D96FF', '#764ba2']
+    
+    # 1. Valor total por estado - Gráfico de barras horizontal con gradiente
     if 'Estado' in df.columns and 'Valor total' in df.columns:
         df_estado = df.groupby('Estado')['Valor total'].sum().reset_index()
-        df_estado = df_estado.sort_values('Valor total', ascending=False)
+        df_estado = df_estado.sort_values('Valor total', ascending=True)
         
-        fig_estado = px.bar(
-            df_estado, 
-            x='Estado', 
-            y='Valor total',
-            title='Valor Total de Inventario por Estado de Consumo',
-            labels={'Valor total': 'Valor Total ($)', 'Estado': 'Estado'},
-            color='Valor total',
-            color_continuous_scale='Blues'
+        fig_estado = go.Figure()
+        fig_estado.add_trace(go.Bar(
+            y=df_estado['Estado'],
+            x=df_estado['Valor total'],
+            orientation='h',
+            marker=dict(
+                color=df_estado['Valor total'],
+                colorscale=[[0, '#FF6B35'], [0.5, '#F7931E'], [1, '#FDC830']],
+                line=dict(color='rgba(255,255,255,0.3)', width=2)
+            ),
+            text=[f'${val:,.0f}' for val in df_estado['Valor total']],
+            textposition='outside',
+            hovertemplate='<b>%{y}</b><br>Valor: $%{x:,.0f}<extra></extra>'
+        ))
+        
+        fig_estado.update_layout(
+            title={
+                'text': '💰 Valor Total de Inventario por Estado',
+                'font': {'size': 24, 'family': 'Poppins', 'color': 'white', 'weight': 700}
+            },
+            xaxis_title='Valor Total ($)',
+            yaxis_title='',
+            height=450,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(255,255,255,0.05)',
+            font=dict(color='white', family='Poppins'),
+            showlegend=False,
+            margin=dict(l=20, r=20, t=60, b=20),
+            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+            yaxis=dict(gridcolor='rgba(255,255,255,0.1)')
         )
-        fig_estado.update_layout(showlegend=False, height=400)
         graficos['estado'] = fig_estado
     
-    # 2. Distribución por cobertura
+    # 2. Distribución por cobertura - Donut chart moderno
     if 'Cobertura Inv' in df.columns and 'Valor total' in df.columns:
         df_cobertura = df.groupby('Cobertura Inv')['Valor total'].sum().reset_index()
         
-        fig_cobertura = px.pie(
-            df_cobertura,
-            values='Valor total',
-            names='Cobertura Inv',
-            title='Distribución de Valor por Cobertura de Inventario',
-            hole=0.4
+        fig_cobertura = go.Figure()
+        fig_cobertura.add_trace(go.Pie(
+            labels=df_cobertura['Cobertura Inv'],
+            values=df_cobertura['Valor total'],
+            hole=0.6,
+            marker=dict(
+                colors=color_scale,
+                line=dict(color='white', width=3)
+            ),
+            textposition='outside',
+            textinfo='label+percent',
+            hovertemplate='<b>%{label}</b><br>Valor: $%{value:,.0f}<br>%{percent}<extra></extra>'
+        ))
+        
+        fig_cobertura.update_layout(
+            title={
+                'text': '📊 Distribución por Cobertura de Inventario',
+                'font': {'size': 24, 'family': 'Poppins', 'color': 'white', 'weight': 700}
+            },
+            height=450,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', family='Poppins', size=12),
+            showlegend=True,
+            legend=dict(
+                orientation="v",
+                yanchor="middle",
+                y=0.5,
+                xanchor="left",
+                x=1.05,
+                bgcolor='rgba(255,255,255,0.1)',
+                bordercolor='rgba(255,255,255,0.3)',
+                borderwidth=1
+            )
         )
-        fig_cobertura.update_layout(height=400)
         graficos['cobertura'] = fig_cobertura
     
-    # 3. Top 10 productos por valor
+    # 3. Top 10 productos - Gráfico de barras con sombras
     if 'Descripción' in df.columns and 'Valor total' in df.columns:
-        df_top = df.nlargest(10, 'Valor total')[['Descripción', 'Valor total', 'Stock']]
+        df_top = df.nlargest(10, 'Valor total')[['Descripción', 'Valor total', 'Stock']].copy()
+        df_top['Descripción'] = df_top['Descripción'].str[:40] + '...'
+        df_top = df_top.sort_values('Valor total', ascending=True)
         
         fig_top = go.Figure()
         fig_top.add_trace(go.Bar(
             y=df_top['Descripción'],
             x=df_top['Valor total'],
             orientation='h',
-            marker=dict(color='#3B82F6'),
-            text=df_top['Stock'],
-            texttemplate='Stock: %{text}',
-            textposition='auto'
+            marker=dict(
+                color=df_top['Valor total'],
+                colorscale='Sunset',
+                line=dict(color='rgba(255,255,255,0.3)', width=2)
+            ),
+            text=[f'${val:,.0f}' for val in df_top['Valor total']],
+            textposition='outside',
+            hovertemplate='<b>%{y}</b><br>Valor: $%{x:,.0f}<extra></extra>'
         ))
+        
         fig_top.update_layout(
-            title='Top 10 Productos por Valor Total',
+            title={
+                'text': '🏆 Top 10 Productos por Valor Total',
+                'font': {'size': 24, 'family': 'Poppins', 'color': 'white', 'weight': 700}
+            },
             xaxis_title='Valor Total ($)',
-            yaxis_title='Producto',
-            height=500
+            yaxis_title='',
+            height=550,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(255,255,255,0.05)',
+            font=dict(color='white', family='Poppins'),
+            showlegend=False,
+            margin=dict(l=20, r=20, t=60, b=20),
+            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+            yaxis=dict(gridcolor='rgba(255,255,255,0.1)')
         )
         graficos['top_productos'] = fig_top
     
-    # 4. Rotación de inventarios
+    # 4. Rotación de inventarios - Histograma con línea de densidad
     if 'Rotación de Inventarios' in df.columns:
-        fig_rotacion = px.histogram(
-            df,
-            x='Rotación de Inventarios',
-            nbins=30,
-            title='Distribución de Rotación de Inventarios',
-            labels={'Rotación de Inventarios': 'Rotación (días)'},
-            color_discrete_sequence=['#3B82F6']
+        fig_rotacion = go.Figure()
+        fig_rotacion.add_trace(go.Histogram(
+            x=df['Rotación de Inventarios'],
+            nbinsx=40,
+            marker=dict(
+                color='#FF6B35',
+                line=dict(color='white', width=1)
+            ),
+            hovertemplate='Rotación: %{x:.1f} días<br>Frecuencia: %{y}<extra></extra>'
+        ))
+        
+        fig_rotacion.update_layout(
+            title={
+                'text': '🔄 Distribución de Rotación de Inventarios',
+                'font': {'size': 24, 'family': 'Poppins', 'color': 'white', 'weight': 700}
+            },
+            xaxis_title='Rotación (días)',
+            yaxis_title='Frecuencia',
+            height=400,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(255,255,255,0.05)',
+            font=dict(color='white', family='Poppins'),
+            showlegend=False,
+            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+            yaxis=dict(gridcolor='rgba(255,255,255,0.1)')
         )
-        fig_rotacion.update_layout(height=400)
         graficos['rotacion'] = fig_rotacion
     
     return graficos
 
 
 # ================================
-# HEADER CORPORATIVO
+# HEADER ESPECTACULAR
 # ================================
 st.markdown("""
-    <div class="main-header">
+    <div class="hero-header">
         <h1>⚡ Dashboard Gerencia de Energía</h1>
-        <p>Sistema de Análisis de Inventarios y Coberturas - Control Mensual</p>
+        <p>Sistema Inteligente de Análisis de Inventarios • Control Mensual Automatizado</p>
     </div>
 """, unsafe_allow_html=True)
 
 # ================================
-# SIDEBAR - CONFIGURACIÓN
+# SIDEBAR ELEGANTE
 # ================================
 with st.sidebar:
-    st.image("https://via.placeholder.com/300x100/1E40AF/FFFFFF?text=LOGO+EMPRESA", 
+    st.markdown("### 🔥 LOGO EMPRESA")
+    st.image("https://via.placeholder.com/300x100/FF6B35/FFFFFF?text=TU+LOGO", 
              use_container_width=True)
     
-    st.markdown("### 📁 Carga de Archivo")
+    st.markdown("---")
+    st.markdown("### 📁 CARGA DE ARCHIVO")
     
     uploaded_file = st.file_uploader(
-        "Selecciona el archivo XLSB",
-        type=['xlsb'],
-        help="Sube el informe mensual en formato XLSB"
+        "Arrastra o selecciona tu archivo",
+        type=['xlsx', 'xls', 'xlsb'],
+        help="Formatos soportados: XLSX, XLS, XLSB"
     )
     
     st.markdown("---")
+    st.markdown("### 📅 PERÍODO DEL INFORME")
     
-    # Configuración del mes
-    st.markdown("### 📅 Período del Informe")
     col1, col2 = st.columns(2)
     with col1:
         mes_actual = st.selectbox(
@@ -345,259 +675,294 @@ with st.sidebar:
         )
     
     st.markdown("---")
-    
-    # Usuario
-    st.markdown("### 👤 Usuario")
+    st.markdown("### 👤 USUARIO")
     usuario = st.text_input("Nombre", value="Administrador")
     
     st.markdown("---")
-    
-    # Filtro de gerencia
-    st.markdown("### 🔍 Filtros")
+    st.markdown("### 🔍 FILTROS")
     gerencia_filter = st.text_input(
-        "Gerencia a analizar",
+        "Gerencia",
         value="ENERGIA",
-        help="Ingresa el nombre de la gerencia"
+        help="Ingresa el nombre de la gerencia a analizar"
     )
+    
+    st.markdown("---")
+    st.markdown(f"""
+        <div style='text-align: center; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 10px;'>
+            <p style='margin: 0; font-size: 0.9rem; opacity: 0.8;'>Dashboard v2.0 Pro</p>
+            <p style='margin: 0; font-size: 0.8rem; opacity: 0.6;'>Powered by Streamlit</p>
+        </div>
+    """, unsafe_allow_html=True)
 
 # ================================
 # CONTENIDO PRINCIPAL
 # ================================
 
 if uploaded_file is not None:
-    with st.spinner('⏳ Procesando archivo XLSB...'):
-        # Convertir XLSB a XLSX
-        xlsx_path = convertir_xlsb_a_xlsx(uploaded_file)
+    with st.spinner('⚡ Procesando datos...'):
+        # Guardar archivo temporalmente
+        file_extension = uploaded_file.name.split('.')[-1].lower()
         
-        if xlsx_path:
-            # Cargar datos filtrados
-            df = cargar_datos_gerencia_energia(xlsx_path, gerencia_filter)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{file_extension}') as tmp_file:
+            tmp_file.write(uploaded_file.read())
+            xlsx_path = tmp_file.name
+        
+        # Cargar datos
+        df = cargar_datos_gerencia_energia(xlsx_path, gerencia_filter)
+        
+        if df is not None and len(df) > 0:
+            st.success(f"✅ ¡Perfecto! Cargados {len(df):,} registros de {gerencia_filter}")
             
-            if df is not None and len(df) > 0:
-                st.success(f"✅ Archivo cargado exitosamente. Registros encontrados: {len(df)}")
-                
-                # ================================
-                # MÉTRICAS PRINCIPALES
-                # ================================
-                st.markdown("### 📊 Resumen Ejecutivo")
-                
-                col1, col2, col3, col4 = st.columns(4)
-                
-                with col1:
-                    total_productos = df['Producto'].nunique() if 'Producto' in df.columns else len(df)
+            # ================================
+            # MÉTRICAS PRINCIPALES CON ANIMACIÓN
+            # ================================
+            st.markdown("### 📊 Panel de Control Principal")
+            
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+                total_productos = df['Producto'].nunique() if 'Producto' in df.columns else len(df)
+                st.metric(
+                    label="🎯 Productos Únicos",
+                    value=f"{total_productos:,}",
+                    delta="SKUs activos"
+                )
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            with col2:
+                st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+                total_stock = df['Stock'].sum() if 'Stock' in df.columns else 0
+                st.metric(
+                    label="📦 Stock Total",
+                    value=f"{total_stock:,.0f}",
+                    delta="Unidades"
+                )
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            with col3:
+                st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+                total_valor = df['Valor total'].sum() if 'Valor total' in df.columns else 0
+                st.metric(
+                    label="💵 Valor Inventario",
+                    value=f"${total_valor/1e6:.1f}M",
+                    delta=f"${total_valor:,.0f}"
+                )
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            with col4:
+                st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+                if 'Rotación de Inventarios' in df.columns:
+                    rotacion_promedio = df['Rotación de Inventarios'].mean()
                     st.metric(
-                        label="Total Productos",
-                        value=f"{total_productos:,}",
-                        delta="Únicos"
+                        label="🔄 Rotación Media",
+                        value=f"{rotacion_promedio:.0f}",
+                        delta="Días"
                     )
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            # ================================
+            # TABS MODERNOS
+            # ================================
+            tab1, tab2, tab3, tab4, tab5 = st.tabs([
+                "📈 Análisis Visual", 
+                "📋 Datos Detallados", 
+                "💾 Guardar Informe",
+                "📂 Histórico",
+                "ℹ️ Información"
+            ])
+            
+            with tab1:
+                st.markdown("### 📈 Visualizaciones Interactivas")
                 
-                with col2:
-                    total_stock = df['Stock'].sum() if 'Stock' in df.columns else 0
-                    st.metric(
-                        label="Stock Total",
-                        value=f"{total_stock:,.0f}",
-                        delta="Unidades"
-                    )
+                graficos = crear_graficos_modernos(df)
                 
-                with col3:
-                    total_valor = df['Valor total'].sum() if 'Valor total' in df.columns else 0
-                    st.metric(
-                        label="Valor Total Inventario",
-                        value=f"${total_valor:,.0f}",
-                        delta="COP"
-                    )
-                
-                with col4:
-                    if 'Rotación de Inventarios' in df.columns:
-                        rotacion_promedio = df['Rotación de Inventarios'].mean()
-                        st.metric(
-                            label="Rotación Promedio",
-                            value=f"{rotacion_promedio:.1f}",
-                            delta="Días"
-                        )
-                
-                st.markdown("---")
-                
-                # ================================
-                # TABS PARA ANÁLISIS
-                # ================================
-                tab1, tab2, tab3, tab4, tab5 = st.tabs([
-                    "📈 Gráficos", "📋 Datos Detallados", "💾 Guardar Informe", 
-                    "📂 Histórico", "ℹ️ Información"
-                ])
-                
-                with tab1:
-                    st.markdown("### 📈 Análisis Gráfico")
-                    
-                    graficos = crear_graficos_analisis(df)
-                    
-                    # Mostrar gráficos en columnas
-                    if 'estado' in graficos or 'cobertura' in graficos:
-                        col1, col2 = st.columns(2)
-                        with col1:
-                            if 'estado' in graficos:
-                                st.plotly_chart(graficos['estado'], use_container_width=True)
-                        with col2:
-                            if 'cobertura' in graficos:
-                                st.plotly_chart(graficos['cobertura'], use_container_width=True)
-                    
-                    if 'top_productos' in graficos:
-                        st.plotly_chart(graficos['top_productos'], use_container_width=True)
-                    
-                    if 'rotacion' in graficos:
-                        st.plotly_chart(graficos['rotacion'], use_container_width=True)
-                
-                with tab2:
-                    st.markdown("### 📋 Tabla de Datos")
-                    
-                    # Filtros adicionales
+                if 'estado' in graficos or 'cobertura' in graficos:
                     col1, col2 = st.columns(2)
                     with col1:
-                        if 'Estado' in df.columns:
-                            estados = ['Todos'] + list(df['Estado'].unique())
-                            estado_filter = st.selectbox("Filtrar por Estado", estados)
+                        if 'estado' in graficos:
+                            st.plotly_chart(graficos['estado'], use_container_width=True, key="estado")
                     with col2:
-                        if 'Cobertura Inv' in df.columns:
-                            coberturas = ['Todos'] + list(df['Cobertura Inv'].unique())
-                            cobertura_filter = st.selectbox("Filtrar por Cobertura", coberturas)
-                    
-                    # Aplicar filtros
-                    df_display = df.copy()
-                    if estado_filter != 'Todos':
-                        df_display = df_display[df_display['Estado'] == estado_filter]
-                    if cobertura_filter != 'Todos':
-                        df_display = df_display[df_display['Cobertura Inv'] == cobertura_filter]
-                    
-                    # Mostrar tabla
-                    st.dataframe(df_display, use_container_width=True, height=500)
-                    
-                    # Descargar datos filtrados
-                    csv = df_display.to_csv(index=False).encode('utf-8')
-                    st.download_button(
-                        label="📥 Descargar datos (CSV)",
-                        data=csv,
-                        file_name=f"datos_energia_{mes_actual}_{año_actual}.csv",
-                        mime="text/csv"
-                    )
+                        if 'cobertura' in graficos:
+                            st.plotly_chart(graficos['cobertura'], use_container_width=True, key="cobertura")
                 
-                with tab3:
-                    st.markdown("### 💾 Guardar Informe Mensual")
-                    
-                    st.info(f"📅 Período: {mes_actual} {año_actual}")
-                    st.info(f"👤 Usuario: {usuario}")
-                    st.info(f"📊 Total de registros: {len(df)}")
-                    
-                    if st.button("💾 Guardar en Histórico", type="primary"):
-                        with st.spinner('Guardando informe...'):
+                if 'top_productos' in graficos:
+                    st.plotly_chart(graficos['top_productos'], use_container_width=True, key="top")
+                
+                if 'rotacion' in graficos:
+                    st.plotly_chart(graficos['rotacion'], use_container_width=True, key="rotacion")
+            
+            with tab2:
+                st.markdown("### 📋 Explorador de Datos")
+                
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    if 'Estado' in df.columns:
+                        estados = ['Todos'] + sorted(list(df['Estado'].unique()))
+                        estado_filter = st.selectbox("🎯 Estado", estados)
+                with col2:
+                    if 'Cobertura Inv' in df.columns:
+                        coberturas = ['Todos'] + sorted(list(df['Cobertura Inv'].unique()))
+                        cobertura_filter = st.selectbox("📊 Cobertura", coberturas)
+                with col3:
+                    buscar = st.text_input("🔍 Buscar producto", "")
+                
+                df_display = df.copy()
+                if estado_filter != 'Todos':
+                    df_display = df_display[df_display['Estado'] == estado_filter]
+                if cobertura_filter != 'Todos':
+                    df_display = df_display[df_display['Cobertura Inv'] == cobertura_filter]
+                if buscar:
+                    df_display = df_display[df_display['Descripción'].str.contains(buscar, case=False, na=False)]
+                
+                st.info(f"📊 Mostrando {len(df_display):,} de {len(df):,} registros")
+                st.dataframe(df_display, use_container_width=True, height=500)
+                
+                csv = df_display.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="📥 Descargar CSV",
+                    data=csv,
+                    file_name=f"energia_{mes_actual}_{año_actual}.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+            
+            with tab3:
+                st.markdown("### 💾 Guardar Informe Mensual")
+                
+                col1, col2 = st.columns([2, 1])
+                with col1:
+                    st.info(f"📅 **Período:** {mes_actual} {año_actual}")
+                    st.info(f"👤 **Usuario:** {usuario}")
+                    st.info(f"📊 **Registros:** {len(df):,}")
+                
+                with col2:
+                    if st.button("💾 GUARDAR", type="primary", use_container_width=True):
+                        with st.spinner('Guardando...'):
                             filename = guardar_historico(df, mes_actual, año_actual, usuario)
-                            st.success(f"✅ Informe guardado exitosamente: {filename}")
+                            st.success(f"✅ ¡Guardado! {filename}")
                             
-                            # Mostrar archivo para descarga
                             with open(filename, 'rb') as f:
                                 st.download_button(
-                                    label="📥 Descargar Informe Guardado",
+                                    label="📥 Descargar",
                                     data=f,
                                     file_name=f"informe_{mes_actual}_{año_actual}.xlsx",
-                                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                    use_container_width=True
                                 )
-                
-                with tab4:
-                    st.markdown("### 📂 Histórico de Informes")
-                    
-                    historico = cargar_historico()
-                    
-                    if historico:
-                        # Convertir a DataFrame
-                        df_historico = pd.DataFrame(historico)
-                        df_historico['fecha'] = pd.to_datetime(df_historico['fecha'])
-                        df_historico = df_historico.sort_values('fecha', ascending=False)
-                        
-                        # Mostrar tabla
-                        st.dataframe(
-                            df_historico[['mes', 'año', 'fecha', 'usuario', 'registros']],
-                            use_container_width=True
-                        )
-                        
-                        # Gráfico de evolución
-                        if len(df_historico) > 1:
-                            fig_evolucion = px.line(
-                                df_historico,
-                                x='fecha',
-                                y='registros',
-                                title='Evolución de Registros Mensuales',
-                                markers=True
-                            )
-                            st.plotly_chart(fig_evolucion, use_container_width=True)
-                    else:
-                        st.warning("No hay informes guardados en el histórico")
-                
-                with tab5:
-                    st.markdown("### ℹ️ Información del Sistema")
-                    
-                    st.markdown("""
-                    #### 📋 Guía de Uso
-                    
-                    1. **Cargar Archivo**: Sube el archivo XLSB mensual desde el sidebar
-                    2. **Revisar Métricas**: Verifica los indicadores principales
-                    3. **Analizar Gráficos**: Explora los diferentes análisis visuales
-                    4. **Filtrar Datos**: Usa los filtros para análisis específicos
-                    5. **Guardar Informe**: Guarda el informe en el histórico mensual
-                    6. **Consultar Histórico**: Revisa informes anteriores
-                    
-                    #### 🎨 Personalización
-                    
-                    - **Logo**: Reemplaza la imagen del sidebar con tu logo corporativo
-                    - **Colores**: Modifica los colores en la sección de estilos CSS
-                    - **Gerencia**: Cambia el filtro de gerencia según necesites
-                    
-                    #### 📊 Columnas Principales
-                    
-                    - **Producto**: Código del material
-                    - **Descripción**: Nombre del producto
-                    - **Stock**: Cantidad en inventario
-                    - **Valor total**: Valor monetario del inventario
-                    - **Estado**: Estado de consumo
-                    - **Cobertura Inv**: Días de cobertura
-                    - **Rotación de Inventarios**: Días de rotación
-                    
-                    #### 🔒 Control de Cambios
-                    
-                    Cada informe guardado registra:
-                    - Fecha y hora de generación
-                    - Usuario que lo generó
-                    - Período (mes/año)
-                    - Número de registros
-                    """)
-            else:
-                st.warning(f"⚠️ No se encontraron datos para la gerencia '{gerencia_filter}'")
             
-            # Limpiar archivo temporal
-            if os.path.exists(xlsx_path):
-                os.remove(xlsx_path)
+            with tab4:
+                st.markdown("### 📂 Histórico de Informes")
+                
+                historico = cargar_historico()
+                
+                if historico:
+                    df_historico = pd.DataFrame(historico)
+                    df_historico['fecha'] = pd.to_datetime(df_historico['fecha'])
+                    df_historico = df_historico.sort_values('fecha', ascending=False)
+                    
+                    st.dataframe(
+                        df_historico[['mes', 'año', 'fecha', 'usuario', 'registros']],
+                        use_container_width=True,
+                        height=400
+                    )
+                    
+                    if len(df_historico) > 1:
+                        fig = px.line(
+                            df_historico,
+                            x='fecha',
+                            y='registros',
+                            markers=True,
+                            title='📈 Evolución Histórica'
+                        )
+                        fig.update_traces(line_color='#FF6B35', marker_size=10)
+                        fig.update_layout(
+                            paper_bgcolor='rgba(0,0,0,0)',
+                            plot_bgcolor='rgba(255,255,255,0.05)',
+                            font=dict(color='white')
+                        )
+                        st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.warning("📭 No hay informes guardados")
+            
+            with tab5:
+                st.markdown("### ℹ️ Guía Rápida")
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.markdown("""
+                    #### 🚀 Flujo de Trabajo
+                    
+                    1. **Cargar archivo** XLSX/XLSB
+                    2. **Revisar métricas** principales
+                    3. **Explorar gráficos** interactivos
+                    4. **Filtrar datos** específicos
+                    5. **Guardar informe** mensual
+                    6. **Consultar histórico**
+                    """)
+                
+                with col2:
+                    st.markdown("""
+                    #### 💡 Tips de Uso
+                    
+                    - 🎨 Gráficos interactivos: zoom, pan, hover
+                    - 📊 Filtros dinámicos en tiempo real
+                    - 💾 Histórico automático por mes
+                    - 📥 Exporta a CSV o Excel
+                    - 🔍 Búsqueda rápida de productos
+                    - 📈 Comparativas mensuales
+                    """)
+        else:
+            st.warning(f"⚠️ No se encontraron datos para '{gerencia_filter}'")
+        
+        if os.path.exists(xlsx_path):
+            os.remove(xlsx_path)
 else:
-    # Pantalla de inicio
+    # Pantalla de bienvenida moderna
     st.markdown("""
-        <div style='text-align: center; padding: 3rem;'>
-            <h2>👋 Bienvenido al Dashboard de Energía</h2>
-            <p style='font-size: 1.2rem; color: #6B7280;'>
-                Para comenzar, carga un archivo XLSB desde el panel lateral
+        <div style='text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.05); border-radius: 20px; border: 2px dashed rgba(255,107,53,0.5);'>
+            <h2 style='color: white; font-size: 2.5rem; margin-bottom: 1rem;'>👋 ¡Bienvenido!</h2>
+            <p style='color: rgba(255,255,255,0.8); font-size: 1.3rem; margin-bottom: 2rem;'>
+                Carga tu archivo para comenzar el análisis
             </p>
-            <br>
-            <p>📁 Soporta archivos en formato XLSB</p>
-            <p>⚡ Análisis automático de datos de energía</p>
-            <p>📊 Gráficos interactivos en tiempo real</p>
-            <p>💾 Sistema de histórico mensual</p>
-            <p>👤 Control de versiones por usuario</p>
+            <div style='display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 2rem;'>
+                <div style='background: rgba(255,107,53,0.1); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,107,53,0.3); flex: 1; min-width: 200px;'>
+                    <div style='font-size: 2rem; margin-bottom: 0.5rem;'>📁</div>
+                    <div style='color: white; font-weight: 600;'>Carga Rápida</div>
+                    <div style='color: rgba(255,255,255,0.6); font-size: 0.9rem;'>XLSX, XLS, XLSB</div>
+                </div>
+                <div style='background: rgba(247,147,30,0.1); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(247,147,30,0.3); flex: 1; min-width: 200px;'>
+                    <div style='font-size: 2rem; margin-bottom: 0.5rem;'>⚡</div>
+                    <div style='color: white; font-weight: 600;'>Análisis Instantáneo</div>
+                    <div style='color: rgba(255,255,255,0.6); font-size: 0.9rem;'>Resultados en segundos</div>
+                </div>
+                <div style='background: rgba(253,200,48,0.1); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(253,200,48,0.3); flex: 1; min-width: 200px;'>
+                    <div style='font-size: 2rem; margin-bottom: 0.5rem;'>📊</div>
+                    <div style='color: white; font-weight: 600;'>Visualización Pro</div>
+                    <div style='color: rgba(255,255,255,0.6); font-size: 0.9rem;'>Gráficos interactivos</div>
+                </div>
+            </div>
         </div>
     """, unsafe_allow_html=True)
 
 # ================================
-# FOOTER
+# FOOTER MODERNO
 # ================================
 st.markdown("---")
 st.markdown("""
-    <div style='text-align: center; color: #6B7280; padding: 1rem;'>
-        <p>Dashboard Gerencia de Energía v1.0 | Desarrollado con ❤️ usando Streamlit</p>
-        <p>© 2026 Tu Empresa - Todos los derechos reservados</p>
+    <div class="footer">
+        <div style='font-size: 1.5rem; margin-bottom: 1rem;'>⚡</div>
+        <div style='color: white; font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem;'>
+            Dashboard Gerencia de Energía
+        </div>
+        <div style='color: rgba(255,255,255,0.6); font-size: 0.9rem;'>
+            Sistema Profesional de Análisis v2.0 • Desarrollado con ❤️ usando Streamlit & Python
+        </div>
+        <div style='color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 1rem;'>
+            © 2026 Tu Empresa - Todos los derechos reservados
+        </div>
     </div>
 """, unsafe_allow_html=True)
