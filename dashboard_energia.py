@@ -264,7 +264,7 @@ def crear_grafico_dona(df, columna, titulo):
     df_agrupado = df.groupby(columna)['Valor total'].sum().reset_index()
     df_agrupado = df_agrupado.sort_values('Valor total', ascending=False)
     
-    colores = ['#00A3E0', '#0077B6', #00D9C8', '#4A90E2', '#00C896']
+    colores = ['#00A3E0', '#0077B6', '#00D9C8', '#4A90E2', '#00C896']
     
     fig = go.Figure()
     fig.add_trace(go.Pie(
